@@ -1,0 +1,130 @@
+﻿<UserControl 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:converters="clr-namespace:Trinity.UI.UIComponents.Converters"
+
+    mc:Ignorable="d" Background="#434343" d:DesignHeight="5000" d:DesignWidth="500">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../UI/Template.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converters:PercentConverter x:Key="PercentConverter" />
+            <converters:EnumBooleanConverter x:Key="EnumBooleanConverter" />
+            <converters:EnumVisibilityConverter x:Key="HiddenWhenEnumTrueConverter" Reverse="True" />
+            <converters:EnumVisibilityConverter x:Key="VisibleWhenEnumTrueConverter"  />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border Padding="10">
+        <Grid>
+            <StackPanel>
+                <GroupBox>
+                    <GroupBox.Header>General</GroupBox.Header>
+                    <StackPanel>
+                        <Slider Template="{DynamicResource LabelledSliderEditable}" 
+                            Tag="群怪分组数量"
+                            ToolTip="Number of monsters that must be grouped up before fighting starts"
+                            Interval="100" IsSnapToTickEnabled="True"
+                            Maximum="40" Minimum="1" SmallChange="100" TickFrequency="1" TickPlacement="BottomRight" 
+                            Value="{Binding Path=DataContext.ClusterSize}" 
+                            HorizontalAlignment="Stretch" Margin="0,0,0,0" MinWidth="175"/>
+                        <Slider Template="{DynamicResource LabelledSliderEditable}"
+                            Tag="群怪分组范围"
+                            ToolTip="战斗开始前必须进行分组的怪物范围"
+                            Interval="100" IsSnapToTickEnabled="True"
+                            Maximum="40" Minimum="10" SmallChange="1" TickFrequency="1" TickPlacement="BottomRight"
+                            Value="{Binding Path=DataContext.ClusterRadius}"
+                            HorizontalAlignment="Stretch" Margin="0,0,0,0" MinWidth="175" />
+                        <Slider  Template="{DynamicResource LabelledSliderEditable}" 
+                        Tag="血量低于 X% 使用血瓶"
+                        ToolTip="How low your health must drop before the potion is used"
+                                Interval="500" Maximum="100" Minimum="0" 
+                                SmallChange="1" LargeChange="5"
+                                TickPlacement="None" 
+                                Value="{Binding Path=DataContext.EmergencyHealthPct, Converter={StaticResource PercentConverter}}" 
+                                HorizontalAlignment="Stretch" Margin="0"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox>
+                    <GroupBox.Header>战斗距离设置</GroupBox.Header>
+                    <StackPanel>
+						<TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap">
+						一般来说，距离越小，聚怪越多，效率越高，危险也越大。</TextBlock>
+                        <Slider  Template="{DynamicResource LabelledSliderEditable}" 
+                            Tag="大米的战斗距离"
+                            ToolTip="带贼神就大点，带囚者就小点"
+                            Interval="500" Maximum="60" Minimum="15" 
+                            SmallChange="1" LargeChange="5"
+                            TickPlacement="None" 
+                            Value="{Binding Path=DataContext.CastDistanceGreaterRift}" 
+                            HorizontalAlignment="Stretch" Margin="0"/>
+                        <Slider  Template="{DynamicResource LabelledSliderEditable}" 
+                            Tag="小米的战斗距离"
+                            ToolTip="选择膜法师在小米一般情况下的战斗距离"
+                            Interval="500" Maximum="60" Minimum="15"
+                            SmallChange="1" LargeChange="5"
+                            TickPlacement="None" 
+                            Value="{Binding Path=DataContext.CastDistanceNephalemRift}" 
+                            HorizontalAlignment="Stretch" Margin="0"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox>
+                    <GroupBox.Header>站撸设置</GroupBox.Header>
+                    <StackPanel>
+						<TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap">
+						作为一个站撸的BD，我推荐堆足坚韧，出几条击回，设置成0。</TextBlock>
+                        <Slider  Template="{DynamicResource LabelledSliderEditable}" 
+                        Tag="血量低于 X% 会尝试躲避怪物"
+                        ToolTip="尽量设置低点"
+                                Interval="500" Maximum="100" Minimum="0" 
+                                SmallChange="1" LargeChange="5"
+                                TickPlacement="None" 
+                                Value="{Binding Path=DataContext.SuperEmergencyHealthPct, Converter={StaticResource PercentConverter}}" 
+                                HorizontalAlignment="Stretch" Margin="0"/>
+					</StackPanel> 
+                </GroupBox>
+				<GroupBox>
+                    <GroupBox.Header>大小米混刷设置</GroupBox.Header>
+                    <StackPanel>
+                        <CheckBox ToolTip="武器切换" 
+                            IsChecked="{Binding DataContext.AutoChangeWeapon}" Content="大米用绝命；小米用以太" />
+						<CheckBox ToolTip="技能切换" 
+                            IsChecked="{Binding DataContext.AutoChangeSkills}" Content="大米：火陨+电奔；小米：电陨+火奔" />
+						<TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap">
+						混刷时把绝命or以太放在包里，并设置保护背包保护栏位。</TextBlock>
+                    </StackPanel> 
+                </GroupBox>
+                <GroupBox>
+                    <GroupBox.Header>装备</GroupBox.Header>
+                    <StackPanel><TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap">装备：塔套 </TextBlock>
+						<TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap">戒指：卡丽娜之环+元素戒+团结，3选2</TextBlock>
+						<TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap">护腕：护盾手腕、死敌护腕</TextBlock>
+						<TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap">武器：绝命（大米）or以太（小米）+副手蚀刻符印 </TextBlock>
+						<TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap">萃取：大维陨石杖 ，天鹰斗衣 ，卡丽娜之环or元素戒or团结</TextBlock>
+						<TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap">宝石：奧幻之石+猛者之厄+囚者之禍。太極、賊神等备选</TextBlock>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox>
+                    <GroupBox.Header>技能</GroupBox.Header>
+                    <StackPanel>
+                        <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap">
+						技能：冰霜新星=冰霜迷霧，秘法奔流=靜電迸發，暴風護甲=風暴能量，守禦之星=秘能回流，傳送術=浩劫傳送，隕石術 隕石風暴</TextBlock>
+						<TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap"> 被动：幻術精通，堅定不移，無畏，異象動盪，秘能補給，精神感悟，元素危害。看着办</TextBlock>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox>
+                    <GroupBox.Header>DUBUG</GroupBox.Header>
+                    <StackPanel>
+                        <CheckBox ToolTip="DebugMode" 
+                            IsChecked="{Binding DataContext.DebugMode}" Content="DebugMode" />
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>
+
+    
