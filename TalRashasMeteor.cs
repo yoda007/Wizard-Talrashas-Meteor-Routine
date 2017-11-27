@@ -33,11 +33,11 @@ namespace Trinity.Routines.Wizard
 
 		#region Definition
 
-		public string DisplayName => "膜法师站撸型塔陨v1.21";
+		public string DisplayName => "膜法师站撸型塔陨v1.23";
 		public string Description => "2.6.1站撸型塔陨";
 		public string Author => "r0";
-		public string Version => "1.21";
-		public string Url => "2017.11.24";
+		public string Version => "1.23";
+		public string Url => "http://www.demonbuddy.cn/thread-14875-1-1.html";
 
 		#region Build Definition
 		public Build BuildRequirements =>  new Build
@@ -99,7 +99,7 @@ namespace Trinity.Routines.Wizard
 		{
 			return (from u in ObjectCache
 				where u.IsUnit && u.IsValid && u.Weight > 0 &&
-					((u.IsElite && u.EliteType != EliteTypes.Minion) || u.ActorSnoId == 360636) &&
+					((u.IsElite && u.EliteType != EliteTypes.Minion) || u.ActorSnoId == 360636 || u.IsTreasureGoblin) &&
 					!u.IsSafeSpot && u != exclude &&
 					u.Type != TrinityObjectType.Shrine &&
 					u.Type != TrinityObjectType.ProgressionGlobe &&
@@ -217,7 +217,7 @@ namespace Trinity.Routines.Wizard
 
             if (!IsInCombat)
                 return false;
-			
+
 			if (_g_isAvoiding)
 				return false;
 
@@ -393,7 +393,7 @@ namespace Trinity.Routines.Wizard
 
 					bool isNephalemRift = Core.Rift.IsNephalemRift && !Player.IsInTown;
 					bool isGreaterRift = Player.IsInTown && (!Core.Rift.IsGreaterRift || Core.Rift.RiftComplete);
-					
+
 					//RuneIndex:
 					//FlameWard = 0, ThunderCrash = 4
 					//StaticDischarge = 3, MeteorShower = 1
@@ -412,7 +412,7 @@ namespace Trinity.Routines.Wizard
 								ZetaDia.Me.SetActiveSkill(Skills.Wizard.ArcaneTorrent.SNOPower, 3, (HotbarSlot)ArcaneTorrentSlot);
 								Thread.Sleep(1000);
 								Core.Logger.Warn($"在城镇中，换成电奔");
-								
+
 							}
 							if (MeteorRuneIndex != 1)
 							{
@@ -512,6 +512,9 @@ namespace Trinity.Routines.Wizard
 			TrinityPower power;
 			_g_isAvoiding = false;
 
+			if (CurrentTarget != null && CurrentTarget.IsTreasureGoblin)
+				return ArcaneTorrent(CurrentTarget);
+
 			if (Core.Rift.IsNephalemRift)
 				target = BestEliteInRange(Player.Position, 60f, true) ?? BestClusterUnit(Player.Position, CastDistance, true);
 			else
@@ -527,7 +530,8 @@ namespace Trinity.Routines.Wizard
 
 			if (!Core.Buffs.HasInvulnerableShrine)
 			{
-				if (Core.Avoidance.InCriticalAvoidance(Player.Position))
+				bool needToAvoid = !DotNotAvoidWhenNephalemRift || !Core.Rift.IsNephalemRift;
+				if (Core.Avoidance.InCriticalAvoidance(Player.Position) && needToAvoid)
 				{
 					var safeSpot = Vector3.Zero;
 					if (Core.Avoidance.Avoider.TryGetSafeSpot(out safeSpot, 20, 50, Player.Position) && safeSpot != Vector3.Zero)
@@ -547,7 +551,7 @@ namespace Trinity.Routines.Wizard
 						}
 					}
 				}
-				if (target.IsBoss && target.Distance < 15)
+				if (target.IsBoss && target.Distance < 15 && needToAvoid)
 				{
 					var safeSpot = Vector3.Zero;
 					if (Core.Avoidance.Avoider.TryGetSafeSpot(out safeSpot, 25, 50, target.Position) && safeSpot != Vector3.Zero)
@@ -587,7 +591,7 @@ namespace Trinity.Routines.Wizard
 						}
 					}
 				}
-				if (Player.CurrentHealthPct < SuperEmergencyHealthPct && GetClosestUnitUnSafe(15f) != null)
+				if (Player.CurrentHealthPct < SuperEmergencyHealthPct && GetClosestUnitUnSafe(15f) != null && needToAvoid)
 				{
 					var safeSpot = Vector3.Zero;
 					if (Core.Avoidance.Avoider.TryGetSafeSpot(out safeSpot, 30, 50, Player.Position) && safeSpot != Vector3.Zero)
@@ -783,10 +787,11 @@ namespace Trinity.Routines.Wizard
 		public override float ClusterRadius => Settings.ClusterRadius;
 		public override float EmergencyHealthPct => Settings.EmergencyHealthPct;
 		public float SuperEmergencyHealthPct => Settings.SuperEmergencyHealthPct;
-		
+
         public override float TrashRange => 60f;
         public override float EliteRange => 60f;
 
+		public bool DotNotAvoidWhenNephalemRift => Settings.DotNotAvoidWhenNephalemRift;
 		public bool AutoChangeWeapon => Settings.AutoChangeWeapon;
 		public bool AutoChangeSkills => Settings.AutoChangeSkills;
 
@@ -807,6 +812,7 @@ namespace Trinity.Routines.Wizard
             private int _castDistanceNephalemRift;
             private int _castDistanceGreaterRift;
 
+			private bool _dotNotAvoidWhenNephalemRift;
 			private bool _autoChangeWeapon;
 			private bool _autoChangeSkills;
 
@@ -867,6 +873,13 @@ namespace Trinity.Routines.Wizard
             }
 
 			[DefaultValue(false)]
+            public bool DotNotAvoidWhenNephalemRift
+            {
+                get { return _dotNotAvoidWhenNephalemRift; }
+                set { SetField(ref _dotNotAvoidWhenNephalemRift, value); }
+            }
+
+			[DefaultValue(false)]
             public bool AutoChangeSkills
             {
                 get { return _autoChangeSkills; }
@@ -905,7 +918,7 @@ namespace Trinity.Routines.Wizard
 			#region IDynamicSetting
 
 			public string GetName() => GetType().Name;
-			public UserControl GetControl() => UILoader.LoadXamlByFileName<UserControl>(GetName() + ".xaml");
+			public UserControl GetControl() => UILoader.LoadXamlByFileName<UserControl>(GetName() + "_en.xaml");
 			public object GetDataContext() => this;
 			public string GetCode() => JsonSerializer.Serialize(this);
 			public void ApplyCode(string code) => JsonSerializer.Deserialize(code, this, true);

@@ -25,21 +25,21 @@
                     <GroupBox.Header>General</GroupBox.Header>
                     <StackPanel>
                         <Slider Template="{DynamicResource LabelledSliderEditable}" 
-                            Tag="群怪分组数量"
+                            Tag="Cluster Size"
                             ToolTip="Number of monsters that must be grouped up before fighting starts"
                             Interval="100" IsSnapToTickEnabled="True"
                             Maximum="40" Minimum="1" SmallChange="100" TickFrequency="1" TickPlacement="BottomRight" 
                             Value="{Binding Path=DataContext.ClusterSize}" 
                             HorizontalAlignment="Stretch" Margin="0,0,0,0" MinWidth="175"/>
                         <Slider Template="{DynamicResource LabelledSliderEditable}"
-                            Tag="群怪分组范围"
-                            ToolTip="战斗开始前必须进行分组的怪物范围"
+                            Tag="Cluster Radius"
+                            ToolTip="Cluster Radius"
                             Interval="100" IsSnapToTickEnabled="True"
                             Maximum="40" Minimum="10" SmallChange="1" TickFrequency="1" TickPlacement="BottomRight"
                             Value="{Binding Path=DataContext.ClusterRadius}"
                             HorizontalAlignment="Stretch" Margin="0,0,0,0" MinWidth="175" />
                         <Slider  Template="{DynamicResource LabelledSliderEditable}" 
-                        Tag="血量低于 X% 使用血瓶"
+                        Tag="Emergency Health Pct %"
                         ToolTip="How low your health must drop before the potion is used"
                                 Interval="500" Maximum="100" Minimum="0" 
                                 SmallChange="1" LargeChange="5"
@@ -54,16 +54,16 @@
 						<TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap">
 						一般来说，距离越小，聚怪越多，效率越高，危险也越大。</TextBlock>
                         <Slider  Template="{DynamicResource LabelledSliderEditable}" 
-                            Tag="大米的战斗距离"
-                            ToolTip="带贼神就大点，带囚者就小点"
+                            Tag="Cast Distance GR"
+                            ToolTip="Cast Distance Greater Rift"
                             Interval="500" Maximum="60" Minimum="15" 
                             SmallChange="1" LargeChange="5"
                             TickPlacement="None" 
                             Value="{Binding Path=DataContext.CastDistanceGreaterRift}" 
                             HorizontalAlignment="Stretch" Margin="0"/>
                         <Slider  Template="{DynamicResource LabelledSliderEditable}" 
-                            Tag="小米的战斗距离"
-                            ToolTip="选择膜法师在小米一般情况下的战斗距离"
+                            Tag="Cast Distance NR"
+                            ToolTip="Cast Distance Nephalem Rift"
                             Interval="500" Maximum="60" Minimum="15"
                             SmallChange="1" LargeChange="5"
                             TickPlacement="None" 
